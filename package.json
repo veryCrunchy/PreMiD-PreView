@@ -21,6 +21,8 @@
     "@types/better-sqlite3": "^7.6.12",
     "@unocss/nuxt": "^65.4.3",
     "@unocss/preset-uno": "^65.4.3",
+    "@vueuse/core": "^12.5.0",
+    "@vueuse/nuxt": "^12.5.0",
     "drizzle-kit": "^0.30.2",
     "unocss": "^65.4.3"
   }
