@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <article class="rounded-xl bg-white p-4 ring ring-indigo-50 sm:p-6 lg:p-8">
+  <div class="rounded-xl bg-white p-4 ring ring-indigo-50 sm:p-6 lg:p-8">
     <div class="flex items-start sm:gap-x-8">
       <img :src="metadata.logo" class="size-10" alt="aa" />
 
@@ -16,7 +16,7 @@
         </strong>
 
         <h3 class="text-lg font-medium sm:text-xl">
-            {{metadata.service}}
+          {{ metadata.service }}
         </h3>
 
         <p class="text-sm text-gray-700">
@@ -51,5 +51,6 @@
         </div>
       </div>
     </div>
-  </article>
+    <slot />
+  </div>
 </template>

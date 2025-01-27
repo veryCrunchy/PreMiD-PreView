@@ -1,4 +1,5 @@
 <template>
+  {{ pmd }}
   <div
     :class="{
       'bg-green': pmd.status.value === 'OPEN',
@@ -19,11 +20,12 @@
   </div>
   <ActivityCard
     class="card"
-    v-if="pmd.activity.value"
-    :metadata="pmd.activity.value"
-  />
+    v-if="pmd.metadata.value"
+    :metadata="pmd.metadata.value"
+  >
+    <button @click="createShare">Upload</button>
+  </ActivityCard>
 
- 
   <NuxtPage />
 </template>
 <style>
@@ -51,19 +53,15 @@
   import { ref } from "vue";
   import { useFetch } from "#app";
   const pmd = usePMD();
-  const content = ref("");
   const shares = ref([]);
 
   async function createShare() {
-    if (!content.value.trim()) return;
+    if (!pmd.files.value) return;
 
     const { data } = await useFetch("/api/share", {
       method: "POST",
-      body: { content: content.value.trim() },
+      body: { files: pmd.files.value, metadata: pmd.metadata.value },
     });
-
-    shares.value.push({ id: data.value.id, content: content.value.trim() });
-    content.value = "";
   }
 
   // Fetch existing shares (optional, for debugging)

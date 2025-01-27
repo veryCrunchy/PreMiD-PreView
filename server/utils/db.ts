@@ -4,10 +4,11 @@ const db = drizzle("file:local.db");
 export default db;
 import crypto from "crypto";
 import { activities, files, revisions, revisionFiles, metadata } from "~/db/schema"; // Import schema
+import { buffer } from 'stream/consumers';
 function Hash(data: crypto.BinaryLike) {
     return crypto.createHash("sha256").update(data).digest("hex")
 }
-export async function uploadRevision(fileList: { name: string, data: Buffer }[], metadataJson: string) {
+export async function uploadRevision(fileList: { name: string, data: string | Buffer }[], metadataJson: string) {
     //TODO: testing, edgecases, duplicate handling, more...
 
     // Insert folder info
@@ -16,11 +17,12 @@ export async function uploadRevision(fileList: { name: string, data: Buffer }[],
     // Calculate file hashes and store unique files
     const fileMap: { [key: string]: number } = {};
     for (const file of fileList) {
+        if (typeof file.data === "string") file.data = Buffer.from(file.data);
         const hash = Hash(file.data)
         if (!fileMap[hash]) {
             const [storedFile] = await db
                 .insert(files).values({ name: file.name, hash, data: file.data })
-                .returning();
+                .returning({ id: files.id });
             fileMap[hash] = storedFile.id;
         }
     }
@@ -46,5 +48,6 @@ export async function uploadRevision(fileList: { name: string, data: Buffer }[],
         await db.delete(revisionFiles).where(eq(revisionFiles.revisionId, oldestRevision.id));
         await db.delete(metadata).where(eq(revisionFiles.revisionId, oldestRevision.id));
     }
+    return folder.id
 }
 //TODO: retrieve
