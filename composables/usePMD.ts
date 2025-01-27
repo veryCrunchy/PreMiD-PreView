@@ -11,10 +11,9 @@ export const usePMD = () => {
         const data: { type: string, files: { file: string, contents: string | object }[] } = JSON.parse(d);
         if (data.type !== "localPresence") return;
         for (const file of data.files) {
-            console.log(file)
             if (file.file === "metadata.json" && typeof file.contents === "object") metadata.value = file.contents
-            if (file.file.endsWith(".js") && typeof file.contents === "string") files.value.push({ name: file.file, data: file.contents })
-            console.log(file.file.endsWith(".js"), typeof file.contents === "string")
+            else if (file.file.endsWith(".json") && typeof file.contents === "object") files.value.push({ name: file.file, data: JSON.stringify(file.contents) })
+            else if (file.file.endsWith(".js") && typeof file.contents === "string") files.value.push({ name: file.file, data: file.contents })
         }
 
     });

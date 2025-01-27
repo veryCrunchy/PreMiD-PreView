@@ -8,6 +8,11 @@ export const activities = sqliteTable("activities", {// the shares created
     createdAt: text().default("CURRENT_TIMESTAMP"),
 });
 
+export const activityRelations = relations(activities, ({ many }) => ({
+    revisions: many(revisions),
+}));
+
+
 export const files = sqliteTable("files", {
     id: integer().primaryKey(),
     name: text().notNull(),
@@ -18,10 +23,21 @@ export const files = sqliteTable("files", {
 
 export const revisions = sqliteTable("revisions", {
     id: integer().primaryKey(),
-    folderId: integer().references(() => activities.id),
+    activityId: integer().references(() => activities.id),
     number: integer().notNull(), // Revision number
     createdAt: text().default("CURRENT_TIMESTAMP").notNull(),
+    metadataId: integer().references(() => files.id),
 });
+
+export const revisionsRelations = relations(revisions, ({ many, one }) => ({
+    activity: one(activities),
+    revisionFiles: many(revisionFiles),
+    metadata: one(revisionFiles, {
+        fields: [revisions.metadataId],
+        references: [revisionFiles.id],
+    }),
+}));
+
 
 export const revisionFiles = sqliteTable("revisionFiles", {
     // Link files to a revision
@@ -29,33 +45,14 @@ export const revisionFiles = sqliteTable("revisionFiles", {
     id: integer().primaryKey(),
     revisionId: integer().references(() => revisions.id),
     fileId: integer().references(() => files.id),
-    createdAt: text().default("CURRENT_TIMESTAMP").notNull(),
 });
-
-export const metadata = sqliteTable("metadata", {
-    // metadata is stored separate from files to ensure easy access
-    id: integer().primaryKey(),
-    revisionId: integer().references(() => revisions.id),
-    hash: text().notNull().unique(), // Hash to avoid duplicates
-    json: text().notNull(),
-    createdAt: text().default("CURRENT_TIMESTAMP").notNull(),
-});
-
-// Relations
-export const activityRelations = relations(activities, ({ many }) => ({
-    revisions: many(revisions),
-}));
-
-export const revisionsRelations = relations(revisions, ({ many, one }) => ({
-    distFolder: one(activities),
-    revisionFiles: many(revisionFiles),
-    metadata: one(metadata),
-}));
 
 export const revisionFilesRelations = relations(revisionFiles, ({ many, one }) => ({
     revision: one(revisions),
     file: one(files),
 }));
+
+
 
 // potentially unnecessary relations
 
