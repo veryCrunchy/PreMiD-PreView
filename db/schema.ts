@@ -1,8 +1,7 @@
 import { relations } from "drizzle-orm";
-import { sqliteTable, text, integer, blob } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, blob, primaryKey } from "drizzle-orm/sqlite-core";
 
 // Tables
-//TODO: check when well rested, schema likely has some flaws 
 export const activities = sqliteTable("activities", {// the shares created
     id: integer().primaryKey(),
     createdAt: text().default("CURRENT_TIMESTAMP"),
@@ -30,11 +29,14 @@ export const revisions = sqliteTable("revisions", {
 });
 
 export const revisionsRelations = relations(revisions, ({ many, one }) => ({
-    activity: one(activities),
+    activity: one(activities, {
+        fields: [revisions.activityId],
+        references: [activities.id],
+    }),
     revisionFiles: many(revisionFiles),
-    metadata: one(revisionFiles, {
+    metadata: one(files, {
         fields: [revisions.metadataId],
-        references: [revisionFiles.id],
+        references: [files.id],
     }),
 }));
 
@@ -42,14 +44,22 @@ export const revisionsRelations = relations(revisions, ({ many, one }) => ({
 export const revisionFiles = sqliteTable("revisionFiles", {
     // Link files to a revision
     // This helps save storage by reusing unchanged files across different revisions
-    id: integer().primaryKey(),
     revisionId: integer().references(() => revisions.id),
     fileId: integer().references(() => files.id),
-});
+},
+    (t) => [
+        primaryKey({ columns: [t.revisionId, t.fileId] }),
+    ])
 
-export const revisionFilesRelations = relations(revisionFiles, ({ many, one }) => ({
-    revision: one(revisions),
-    file: one(files),
+export const revisionFilesRelations = relations(revisionFiles, ({ one }) => ({
+    revision: one(revisions, {
+        fields: [revisionFiles.revisionId],
+        references: [revisions.id]
+    }),
+    file: one(files, {
+        fields: [revisionFiles.fileId],
+        references: [files.id]
+    }),
 }));
 
 
