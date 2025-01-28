@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/libsql';
-import { eq, desc, ExtractTablesWithRelations } from 'drizzle-orm';
+import { eq, desc, ExtractTablesWithRelations, sql } from 'drizzle-orm';
 import * as schema from "~/db/schema";
 const db = drizzle("file:local.db", { schema });
 export default db;
@@ -66,11 +66,20 @@ export async function getActivityShares() {
                 limit: 1,
                 orderBy: desc(revisions.number),
                 with: {
-                    metadata: true
+                    metadata: {
+                        columns: {
+                            data: false
+                        },
+                        extras: {
+                            data: sql<string>`
+                                    CAST(${files.data} AS TEXT)
+                                `.as("data"),
+                        },
+                    }
                 }
+
             },
         }
-    })
-    //TODO: fix json blob issues
+    });
     return shares;
 }
