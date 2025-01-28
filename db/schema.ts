@@ -14,7 +14,7 @@ const CURRENT_TIMESTAMP = sql`(unixepoch())`;
 export const activities = sqliteTable("activities", {
   // the shares created
   id: text().primaryKey().default(nanoid()),
-  timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: integer().default(CURRENT_TIMESTAMP).notNull(),
 });
 
 export const activityRelations = relations(activities, ({ many }) => ({
@@ -26,7 +26,7 @@ export const files = sqliteTable("files", {
   name: text().notNull(),
   hash: text().notNull().unique(), // Hash to avoid duplicates
   data: blob().notNull(),
-  timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: integer().default(CURRENT_TIMESTAMP).notNull(),
 });
 
 export const revisions = sqliteTable("revisions", {
@@ -35,7 +35,7 @@ export const revisions = sqliteTable("revisions", {
     .references(() => activities.id)
     .notNull(),
   number: integer().notNull(), // Revision number
-  timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: integer().default(CURRENT_TIMESTAMP).notNull(),
   metadataId: integer()
     .references(() => files.id)
     .notNull(),

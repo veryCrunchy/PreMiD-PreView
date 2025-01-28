@@ -62,7 +62,7 @@ export async function uploadActivityShare(
         .select()
         .from(revisions)
         .where(eq(revisions.activityId, activity.id))
-        .orderBy(desc(revisions.createdAt))
+        .orderBy(desc(revisions.timestamp))
         .limit(1);
       const revisionNumber = latestRevision ? latestRevision.number + 1 : 1;
       const [revision] = await tx
@@ -84,7 +84,7 @@ export async function uploadActivityShare(
         .where(eq(revisions.activityId, activity.id));
       if (totalRevisions.length > 5) {
         const oldestRevision = totalRevisions.sort(
-          (a, b) => Number(a.createdAt) - Number(b.createdAt)
+          (a, b) => a.timestamp - b.timestamp
         )[0];
         await tx.delete(revisions).where(eq(revisions.id, oldestRevision.id));
         //TODO: only delete files that aren't needed/referenced anymore
@@ -101,11 +101,11 @@ export type Share = {
   revision: {
     number: number;
     id: number;
-    createdAt: string;
+    timestamp: number;
     activityId: number;
   };
   metadata: Metadata;
-  createdAt: string;
+  timestamp: number;
 };
 export async function getActivityShares(): Promise<Share[]> {
   const shares = await db.query.activities.findMany({
@@ -130,7 +130,7 @@ export async function getActivityShares(): Promise<Share[]> {
   });
   const processedShares = shares.map((share) => {
     return {
-      createdAt: share.createdAt,
+      timestamp: share.timestamp,
       metadata: JSON.parse(share.revisions[0].metadata.data) as Metadata,
       revision: omit(share.revisions[0], ["metadata", "metadataId"]),
     };
