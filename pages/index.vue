@@ -1,32 +1,37 @@
 <template>
-  {{ pmd.files.value.length }}
-  <div
-    :class="{
-      'bg-green': pmd.status.value === 'OPEN',
-      'bg-yellow': pmd.status.value === 'CONNECTING',
-      'bg-red': pmd.status.value === 'CLOSED',
-    }"
-    class="flex p-2 px-4 w-min items-center justify-center rounded-full"
-  >
-    <div class="">
-      <span v-if="pmd.status.value === 'OPEN'">CONNECTED</span>
-      <span
-        v-if="pmd.status.value === 'CONNECTING'"
-        class="badge badge-blue animate-pulse rounded-full"
-        >CONNECTING</span
-      >
-      <span v-if="pmd.status.value === 'CLOSED'">DISCONNECTED</span>
+  <main class="mx-5vw">
+    {{ pmd.files.value.length }}
+
+    <div
+      :class="{
+        'bg-green': pmd.status.value === 'OPEN',
+        'bg-yellow': pmd.status.value === 'CONNECTING',
+        'bg-red': pmd.status.value === 'CLOSED',
+      }"
+      class="flex p-2 px-4 w-min items-center justify-center rounded-full"
+    >
+      <div class="">
+        <span v-if="pmd.status.value === 'OPEN'">CONNECTED</span>
+        <span
+          v-if="pmd.status.value === 'CONNECTING'"
+          class="badge badge-blue animate-pulse rounded-full"
+          >CONNECTING</span
+        >
+        <span v-if="pmd.status.value === 'CLOSED'">DISCONNECTED</span>
+      </div>
     </div>
-  </div>
-  <ActivityCard
-    class="card"
-    v-if="pmd.metadata.value"
-    :metadata="pmd.metadata.value"
-  >
-    <button @click="createShare">Upload</button>
-  </ActivityCard>
-  {{ shares }}
-  <NuxtPage />
+    <ActivityCard
+      class="card"
+      v-if="pmd.metadata.value"
+      :metadata="pmd.metadata.value"
+    >
+      <button @click="createShare">Upload</button>
+    </ActivityCard>
+    <div class="flex gap-5 overflow-x-scroll">
+      <ActivityCard class="card" v-for="share in shares" :share="share">
+      </ActivityCard>
+    </div>
+  </main>
 </template>
 <style>
   body {
@@ -43,26 +48,29 @@
     -webkit-backdrop-filter: blur(6.2px);
     border: 1px solid rgba(48, 30, 30, 0.3);
   }
+
+  .card hr {
+    border: 0;
+    display: block;
+    width: 100%;
+    background-color: rgba(48, 30, 30, 0.5);
+    height: 1px;
+    border-radius: 4px;
+  }
 </style>
 
 <script setup>
-
   const pmd = usePMD();
-  const shares = ref([]);
 
   async function createShare() {
     if (!pmd.files.value) return;
 
-    const { data } = await useFetch("/api/share", {
+    const { data } = useFetch("/api/share", {
       method: "POST",
       body: { files: pmd.files.value, metadata: pmd.metadata.value },
     });
   }
 
   // Fetch existing shares (optional, for debugging)
-  async function fetchShares() {
-    const { data } = await useFetch("/api/share");
-    shares.value = data.value || [];
-  }
-  fetchShares();
+  const { data: shares } = useFetch("/api/share");
 </script>

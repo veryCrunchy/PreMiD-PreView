@@ -1,53 +1,61 @@
-<script setup>
-  defineProps(["metadata"]);
+<script setup lang="ts">
+  import type { Share } from "~/server/utils/db";
+
+  const { share } = defineProps({
+    share: { type: Object as PropType<Share>, required: true },
+  });
+  const { metadata } = share;
 </script>
 
 <template>
-  <div class="rounded-xl bg-white p-4 ring ring-indigo-50 sm:p-6 lg:p-8">
-    <div class="flex items-start sm:gap-x-8">
-      <img :src="metadata.logo" class="size-10" alt="aa" />
+  <div
+    class="rounded-xl max-w-sm rounded overflow-hidden shadow-lg text-gray-800 ring ring-indigo-50"
+  >
+    <!-- Service logo and thumbnail -->
+    <img
+      class="w-full h-36 object-cover"
+      :src="metadata.thumbnail"
+      alt="Service Thumbnail"
+    />
 
-      <div class="">
-        <strong
-          v-for="tag in metadata.tags"
-          class="rounded border mr-2 border-indigo-500 bg-indigo-500 px-3 py-1.5 text-[10px] font-medium text-white"
-        >
-          {{ tag }}
-        </strong>
+    <div class="px-4 my-4 gap-2 flex flex-col ">
+      <!-- Service title and version -->
+      <div class="flex items-center">
+        <img
+          class="size-15 rounded-md mr-3"
+          :src="metadata.logo"
+          alt="Service Logo"
+        />
+        <div>
+          <h2 class="text-xl font-semibold">
+            {{ metadata.service }}
+          </h2>
+          <p class="text-sm text-gray-800">Version {{ metadata.version }}</p>
+        </div>
+      </div>
 
-        <h3 class="text-lg font-medium sm:text-xl">
-          {{ metadata.service }}
-        </h3>
-
-        <p class="text-sm text-gray-700">
-          {{ metadata.description.en }}
+      <!-- Description -->
+      <div ">
+        <p class="text-gray-800">
+          {{
+            metadata.description["en"] ??
+            Object.entries(metadata.description)[0][1]
+          }}
         </p>
+      </div>
 
-        <div class="sm:flex sm:items-center sm:gap-2">
-          <div
-            class="flex items-center gap-1 text-xs font-medium text-gray-500"
-          >
-            <!-- <svg
-              class="size-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-
-            <p class="">48:32 minutes</p> -->
-
-            <!-- <span class="hidden sm:block" aria-hidden="true">&middot;</span> -->
-
-            <p>v{{ metadata.version }}</p>
-          </div>
+      <hr />
+      <div class="flex items-center">
+        <img
+          class="size-15 rounded-md mr-3"
+          src="https://pfp.crun.zip"
+          alt="Uploaded Pfp"
+        />
+        <div>
+          <h2 class="text-xl font-semibold">
+            Uploader Name
+          </h2>
+          <RelativeTime  :timestamp="new Date().getTime()"  />
         </div>
       </div>
     </div>
