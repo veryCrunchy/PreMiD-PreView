@@ -1,7 +1,23 @@
+<script setup>
+  const pmd = usePMD();
+  const { loggedIn, user, session, fetch, clear } = useUserSession()
+  async function createShare() {
+    if (!pmd.files.value) return;
+
+    const { data } = useFetch("/api/share", {
+      method: "POST",
+      body: { files: pmd.files.value, metadata: pmd.metadata.value },
+    });
+  }
+
+  // Fetch existing shares (optional, for debugging)
+  const { data: shares } = useFetch("/api/share");
+</script>
+
 <template>
   <main class="mx-5vw">
     {{ pmd.files.value.length }}
-
+    {{user}}
     <div
       :class="{
         'bg-green': pmd.status.value === 'OPEN',
@@ -58,19 +74,3 @@
     border-radius: 4px;
   }
 </style>
-
-<script setup>
-  const pmd = usePMD();
-
-  async function createShare() {
-    if (!pmd.files.value) return;
-
-    const { data } = useFetch("/api/share", {
-      method: "POST",
-      body: { files: pmd.files.value, metadata: pmd.metadata.value },
-    });
-  }
-
-  // Fetch existing shares (optional, for debugging)
-  const { data: shares } = useFetch("/api/share");
-</script>
