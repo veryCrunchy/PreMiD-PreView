@@ -7,13 +7,13 @@ import {
   primaryKey,
 } from "drizzle-orm/sqlite-core";
 
-const CURRENT_TIMESTAMP = sql`(current_timestamp)`;
+const CURRENT_TIMESTAMP = sql`(unixepoch())`;
 
 // Tables
 export const activities = sqliteTable("activities", {
   // the shares created
   id: integer().primaryKey(),
-  createdAt: text().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
 });
 
 export const activityRelations = relations(activities, ({ many }) => ({
@@ -25,7 +25,7 @@ export const files = sqliteTable("files", {
   name: text().notNull(),
   hash: text().notNull().unique(), // Hash to avoid duplicates
   data: blob().notNull(),
-  createdAt: text().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
 });
 
 export const revisions = sqliteTable("revisions", {
@@ -34,7 +34,7 @@ export const revisions = sqliteTable("revisions", {
     .references(() => activities.id)
     .notNull(),
   number: integer().notNull(), // Revision number
-  createdAt: text().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
   metadataId: integer()
     .references(() => files.id)
     .notNull(),
