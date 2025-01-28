@@ -6,13 +6,14 @@ import {
   blob,
   primaryKey,
 } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 const CURRENT_TIMESTAMP = sql`(unixepoch())`;
 
 // Tables
 export const activities = sqliteTable("activities", {
   // the shares created
-  id: integer().primaryKey(),
+  id: text().primaryKey().default(nanoid()),
   timestamp: text().default(CURRENT_TIMESTAMP).notNull(),
 });
 
