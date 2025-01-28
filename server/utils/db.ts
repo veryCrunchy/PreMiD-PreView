@@ -13,10 +13,13 @@ async function handleFileUpload({ name, data }: File): Promise<number> {
     if (typeof data === "object") data = JSON.stringify(data);
     data = Buffer.from(data);
     const hash = Hash(data)
-    const [storedFile] = await db
+    const [existingFile] = await tx
+        .select({ id: files.id }).from(files).where(eq(files.hash, hash))
+    if (existingFile) return existingFile.id
+    const [newFile] = await tx
         .insert(files).values({ name, hash, data })
         .returning({ id: files.id });
-    return storedFile.id
+    return newFile.id
 }
 export async function uploadActivityShare(fileList: File[], metadataJson: string) {
     //TODO: testing, edgecases, duplicate handling, more...
@@ -27,12 +30,9 @@ export async function uploadActivityShare(fileList: File[], metadataJson: string
     // Calculate file hashes and store unique files
     const metadataId = await handleFileUpload({ data: metadataJson, name: "metadata.json" });
 
-    const fileMap: { [key: string]: number } = {};
+    const fileIds: number[] = [];
     for (let { name, data } of fileList) {
-        const hash = Hash(data)
-        if (!fileMap[hash]) {
-            fileMap[hash] = await handleFileUpload({ data, name });
-        }
+        fileIds.push(await handleFileUpload({ data, name }));
     }
 
     // Insert revision info
@@ -41,8 +41,8 @@ export async function uploadActivityShare(fileList: File[], metadataJson: string
     const [revision] = await db.insert(revisions).values({ activityId: activity.id, number: revisionNumber, metadataId }).returning();
 
     // Link files to revision
-    for (const fileHash in fileMap) {
-        await db.insert(revisionFiles).values({ revisionId: revision.id, fileId: fileMap[fileHash] });
+    for (const fileId of fileIds) {
+        await db.insert(revisionFiles).values({ revisionId: revision.id, fileId });
     }
 
     // Clean up old revisions if necessary
