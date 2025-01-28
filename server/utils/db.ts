@@ -33,7 +33,7 @@ return await db.transaction(async (tx) => {
     // Calculate file hashes and store unique files
     const metadataId = await handleFileUpload({ data: metadataJson, name: "metadata.json" }, tx);
 
-    const fileIds: number[] = [];
+        const fileIds: number[] = [metadataId];
     for (let { name, data } of fileList) {
         fileIds.push(await handleFileUpload({ data, name }, tx));
     }
