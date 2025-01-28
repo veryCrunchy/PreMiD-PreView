@@ -31,7 +31,7 @@ export const files = sqliteTable("files", {
 
 export const revisions = sqliteTable("revisions", {
   id: integer().primaryKey(),
-  activityId: integer()
+  activityId: text()
     .references(() => activities.id)
     .notNull(),
   number: integer().notNull(), // Revision number

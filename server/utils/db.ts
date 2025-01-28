@@ -102,7 +102,7 @@ export type Share = {
     number: number;
     id: number;
     timestamp: number;
-    activityId: number;
+    activityId: string;
   };
   metadata: Metadata;
   timestamp: number;
