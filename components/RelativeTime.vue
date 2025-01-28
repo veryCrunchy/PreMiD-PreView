@@ -3,14 +3,10 @@
 </template>
 
 <script setup lang="ts">
-  const { timestamp, updateInterval } = defineProps({
+  const { timestamp } = defineProps({
     timestamp: {
       type: Number,
       required: true, // A Unix timestamp (e.g., Date.now())
-    },
-    updateInterval: {
-      type: Number,
-      default: 60000, // Default update interval in milliseconds (e.g., every minute)
     },
   });
 
@@ -37,16 +33,32 @@
   // Update relative time initially and on a timer
   const updateRelativeTime = () => {
     relativeTime.value = getRelativeTime(timestamp);
+    setDynamicInterval();
+  };
+  let intervalId: ReturnType<typeof setInterval> | undefined;
+
+  // Set dynamic update interval based on the time difference
+  const setDynamicInterval = () => {
+    const now = Date.now();
+    const diff = Math.abs(timestamp - now);
+
+    let interval = 60000; // Default to 1 minute
+
+    if (diff < 60000) {
+      interval = 1000; // Update every second if less than a minute
+    } else if (diff < 3600000) {
+      interval = 60000; // Update every minute if less than an hour
+    } else if (diff < 86400000) {
+      interval = 3600000; // Update every hour if less than a day
+    }
+
+    if (intervalId) clearInterval(intervalId);
+    intervalId = setInterval(updateRelativeTime, interval);
   };
 
-  // Watch for changes in the `timestamp` prop
-  watch(() => timestamp, updateRelativeTime, { immediate: true });
-
-  // Timer for automatic updates
-  let intervalId: ReturnType<typeof setInterval> | undefined;
   onMounted(() => {
+    watch(() => timestamp, updateRelativeTime, { immediate: true });
     updateRelativeTime();
-    intervalId = setInterval(updateRelativeTime, updateInterval);
   });
 
   onUnmounted(() => {
