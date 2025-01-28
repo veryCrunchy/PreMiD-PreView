@@ -1,5 +1,5 @@
 <template>
-  {{ pmd }}
+  {{ pmd.files.value.length }}
   <div
     :class="{
       'bg-green': pmd.status.value === 'OPEN',
@@ -25,18 +25,14 @@
   >
     <button @click="createShare">Upload</button>
   </ActivityCard>
-
+  {{ shares }}
   <NuxtPage />
 </template>
 <style>
   body {
-    background: rgb(195, 193, 230);
-    background: linear-gradient(
-      90deg,
-      rgba(195, 193, 230, 1) 0%,
-      rgba(255, 182, 248, 1) 35%,
-      rgba(17, 105, 134, 1) 100%
-    );
+    background: #a487e6;
+    background: linear-gradient(90deg, #a487e6, #f2bfe3);
+    backdrop-filter: blur(5px);
   }
 
   .card {
@@ -50,8 +46,7 @@
 </style>
 
 <script setup>
-  import { ref } from "vue";
-  import { useFetch } from "#app";
+
   const pmd = usePMD();
   const shares = ref([]);
 
@@ -69,6 +64,5 @@
     const { data } = await useFetch("/api/share");
     shares.value = data.value || [];
   }
-
   fetchShares();
 </script>
