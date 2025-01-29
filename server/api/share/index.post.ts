@@ -1,12 +1,15 @@
-import { uploadActivityShare } from '~/server/utils/db';
+import { uploadActivityShare } from "~/server/utils/db";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+  const { user } = await requireUserSession(event);
 
-    if (!body.files || !body.metadata) {
-        throw createError({ statusCode: 400, message: 'Content is required' });
-    }
-    const id = await uploadActivityShare(body.files, body.metadata)
+  const body = await readBody(event);
 
-    return { id };
+  if (!body.files || !body.metadata) {
+    throw createError({ statusCode: 400, message: "Content is required" });
+  }
+  
+  const id = await uploadActivityShare(body.files, body.metadata, user.id);
+
+  return { id };
 });
