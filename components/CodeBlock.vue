@@ -51,14 +51,9 @@
   .hoverable:hover .hidden {
     display: block;
   }
-  div:has(pre:has(code)) {
-    border-radius: 1rem;
-    background: rgba(0, 0, 0, 0.8);
-    border: solid 2px #333;
-  }
 
   pre:has(code) {
-    border-radius: 1rem;
+    border-radius: .5rem;
     border: solid 2px #333;
   }
   pre code {
