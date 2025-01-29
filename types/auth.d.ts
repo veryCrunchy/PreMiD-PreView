@@ -1,12 +1,7 @@
+import { DiscordUser } from "./discord";
 // auth.d.ts
 declare module "#auth-utils" {
-  interface User {
-    id: string;
-    username: string;
-    avatar: string;
-    global_name: ?string;
-  }
-
+  interface User extends DiscordUser {}
   interface UserSession {
     // Add your own fields
   }
@@ -15,5 +10,3 @@ declare module "#auth-utils" {
     // Add your own fields
   }
 }
-
-export {};

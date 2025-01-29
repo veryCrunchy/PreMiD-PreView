@@ -10,16 +10,31 @@ import {
 import { nanoid } from "nanoid";
 
 // Tables
+export const users = pgTable("users", {
+  // the shares created
+  id: varchar().primaryKey(),
+  username: varchar().notNull(),
+  global_name: varchar(),
+  avatar: varchar(),
+  timestamp: timestamp().notNull().defaultNow(),
+});
+
 export const activities = pgTable("activities", {
   // the shares created
   id: varchar()
     .primaryKey()
     .$defaultFn(() => nanoid()),
   timestamp: timestamp().notNull().defaultNow(),
-  creator: varchar().notNull(),
+  authorId: varchar()
+    .notNull()
+    .references(() => users.id),
 });
 
-export const activityRelations = relations(activities, ({ many }) => ({
+export const activityRelations = relations(activities, ({ one, many }) => ({
+  author: one(users, {
+    fields: [activities.authorId],
+    references: [users.id],
+  }),
   revisions: many(revisions),
 }));
 
@@ -60,8 +75,12 @@ export const revisionFiles = pgTable(
   {
     // Link files to a revision
     // This helps save storage by reusing unchanged files across different revisions
-    revisionId: integer().references(() => revisions.id),
-    fileId: integer().references(() => files.id),
+    revisionId: integer()
+      .references(() => revisions.id)
+      .notNull(),
+    fileId: integer()
+      .references(() => files.id)
+      .notNull(),
   },
   (t) => [primaryKey({ columns: [t.revisionId, t.fileId] })]
 );

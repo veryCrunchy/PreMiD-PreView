@@ -36,7 +36,7 @@ async function handleFileUpload(
 export async function uploadActivityShare(
   fileList: File[],
   metadataJson: string,
-  creator: string
+  authorId: string
 ) {
   return await db
     .transaction(async (tx) => {
@@ -44,7 +44,7 @@ export async function uploadActivityShare(
       //TODO: multiple revisions under same activity
       const [activity] = await tx
         .insert(activities)
-        .values({ creator })
+        .values({ authorId })
         .returning();
 
       // Calculate file hashes and store unique files
