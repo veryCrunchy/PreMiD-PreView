@@ -5,7 +5,7 @@ const db = drizzle(process.env.DATABASE_URL!, { schema });
 export default db;
 import crypto from "crypto";
 import { activities, files, revisions, revisionFiles } from "~/db/schema"; // Import schema
-import { omit } from "~/utils";
+import { omit } from "~/server/utils";
 import { Metadata } from "~/types/metadata/1.13";
 import { PgTransaction } from "drizzle-orm/pg-core";
 function Hash(data: crypto.BinaryLike) {
@@ -99,6 +99,7 @@ export async function uploadActivityShare(
 }
 //TODO: retrieve
 export type Share = {
+  id: string;
   revision: {
     number: number;
     id: number;
@@ -131,6 +132,7 @@ export async function getActivityShares(): Promise<Share[]> {
   });
   const processedShares = shares.map((share) => {
     return {
+      id: share.id,
       timestamp: share.timestamp,
       metadata: JSON.parse(share.revisions[0].metadata.data) as Metadata,
       revision: omit(share.revisions[0], ["metadata", "metadataId"]),
@@ -153,6 +155,7 @@ export async function getActivityShare(id: string): Promise<Share> {
   });
   if (!share) throw new Error("Share not found");
   return {
+    id: share.id,
     timestamp: share.timestamp,
     metadata: JSON.parse(share.revisions[0].metadata.data) as Metadata,
     revision: omit(share.revisions[0], ["metadata", "metadataId"]),

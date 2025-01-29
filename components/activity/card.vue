@@ -8,7 +8,7 @@
 </script>
 
 <template>
-  <div
+  <main
     class="rounded-xl max-w-sm rounded overflow-hidden shadow-lg text-gray-800 ring ring-indigo-50"
   >
     <!-- Service logo and thumbnail -->
@@ -18,7 +18,7 @@
       alt="Service Thumbnail"
     />
 
-    <div class="px-4 my-4 gap-2 flex flex-col ">
+    <div class="px-4 my-4 gap-2 flex flex-col">
       <!-- Service title and version -->
       <div class="flex items-center">
         <img
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Description -->
-      <div ">
+      <div>
         <p class="text-gray-800">
           {{
             metadata.description["en"] ??
@@ -52,13 +52,13 @@
           alt="Uploaded Pfp"
         />
         <div>
-          <h2 class="text-xl font-semibold">
-            Uploader Name
-          </h2>
-          <RelativeTime  :timestamp="new Date().getTime()"  />
+          <h2 class="text-xl font-semibold">Uploader Name</h2>
+          <RelativeTime :timestamp="new Date().getTime()" />
         </div>
       </div>
+
+      <NuxtLink class="h-4 w-20 bg-white rounded-md border-solid" :to="`/${share.id}`">
+      </NuxtLink>
     </div>
-    <slot />
-  </div>
+  </main>
 </template>
