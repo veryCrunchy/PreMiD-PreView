@@ -138,3 +138,23 @@ export async function getActivityShares(): Promise<Share[]> {
   });
   return processedShares;
 }
+export async function getActivityShare(id: string): Promise<Share> {
+  const share = await db.query.activities.findFirst({
+    where: eq(activities.id, id),
+    with: {
+      revisions: {
+        limit: 1,
+        orderBy: desc(revisions.number),
+        with: {
+          metadata: true,
+        },
+      },
+    },
+  });
+  if (!share) throw new Error("Share not found");
+  return {
+    timestamp: share.timestamp,
+    metadata: JSON.parse(share.revisions[0].metadata.data) as Metadata,
+    revision: omit(share.revisions[0], ["metadata", "metadataId"]),
+  };
+}
