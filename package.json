@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/fonts": "0.10.3",
     "@unocss/reset": "^65.4.3",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@unocss/nuxt": "^65.4.3",
     "@unocss/preset-uno": "^65.4.3",
+    "@unocss/transformer-directives": "^65.4.3",
     "@vueuse/core": "^12.5.0",
     "@vueuse/nuxt": "^12.5.0",
     "drizzle-kit": "^0.30.2",
