@@ -1,29 +1,26 @@
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle, PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
 import { eq, desc, ExtractTablesWithRelations, sql } from "drizzle-orm";
 import * as schema from "~/db/schema";
-const db = drizzle("file:local.db", { schema });
+const db = drizzle(process.env.DATABASE_URL!, { schema });
 export default db;
 import crypto from "crypto";
 import { activities, files, revisions, revisionFiles } from "~/db/schema"; // Import schema
-import { ResultSet } from "@libsql/client";
-import { SQLiteTransaction } from "drizzle-orm/sqlite-core";
 import { omit } from "~/utils";
 import { Metadata } from "~/types/metadata/1.13";
+import { PgTransaction } from "drizzle-orm/pg-core";
 function Hash(data: crypto.BinaryLike) {
   return crypto.createHash("sha256").update(data).digest("hex");
 }
-type File = { name: string; data: string | Buffer };
+type File = { name: string; data: string };
 async function handleFileUpload(
   { name, data }: File,
-  tx: SQLiteTransaction<
-    "async",
-    ResultSet,
+  tx: PgTransaction<
+    PostgresJsQueryResultHKT,
     typeof schema,
     ExtractTablesWithRelations<typeof schema>
   >
 ): Promise<number> {
   if (typeof data === "object") data = JSON.stringify(data);
-  data = Buffer.from(data);
   const hash = Hash(data);
   const [existingFile] = await tx
     .select({ id: files.id })
@@ -38,13 +35,17 @@ async function handleFileUpload(
 }
 export async function uploadActivityShare(
   fileList: File[],
-  metadataJson: string
+  metadataJson: string,
+  creator: string
 ) {
   return await db
     .transaction(async (tx) => {
       // Insert folder info
       //TODO: multiple revisions under same activity
-      const [activity] = await tx.insert(activities).values({}).returning();
+      const [activity] = await tx
+        .insert(activities)
+        .values({ creator })
+        .returning();
 
       // Calculate file hashes and store unique files
       const metadataId = await handleFileUpload(
@@ -78,20 +79,20 @@ export async function uploadActivityShare(
       }
 
       // Clean up old revisions if necessary
-      const totalRevisions = await tx
-        .select()
-        .from(revisions)
-        .where(eq(revisions.activityId, activity.id));
-      if (totalRevisions.length > 5) {
-        const oldestRevision = totalRevisions.sort(
-          (a, b) => a.timestamp - b.timestamp
-        )[0];
-        await tx.delete(revisions).where(eq(revisions.id, oldestRevision.id));
-        //TODO: only delete files that aren't needed/referenced anymore
-        await tx
-          .delete(revisionFiles)
-          .where(eq(revisionFiles.revisionId, oldestRevision.id));
-      }
+      // const totalRevisions = await tx
+      //   .select()
+      //   .from(revisions)
+      //   .where(eq(revisions.activityId, activity.id));
+      // if (totalRevisions.length > 5) {
+      //   const oldestRevision = totalRevisions.sort(
+      //     (a, b) => a.timestamp - b.timestamp
+      //   )[0];
+      //   await tx.delete(revisions).where(eq(revisions.id, oldestRevision.id));
+      //   //TODO: only delete files that aren't needed/referenced anymore
+      //   await tx
+      //     .delete(revisionFiles)
+      //     .where(eq(revisionFiles.revisionId, oldestRevision.id));
+      // }
       return activity.id;
     })
     .catch((e) => console.log(e));
@@ -101,11 +102,11 @@ export type Share = {
   revision: {
     number: number;
     id: number;
-    timestamp: number;
+    timestamp: Date;
     activityId: string;
   };
   metadata: Metadata;
-  timestamp: number;
+  timestamp: Date;
 };
 export async function getActivityShares(): Promise<Share[]> {
   const shares = await db.query.activities.findMany({

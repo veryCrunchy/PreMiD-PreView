@@ -10,18 +10,17 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@libsql/client": "^0.14.0",
     "@unocss/reset": "^65.4.3",
-    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
     "nanoid": "^5.0.9",
     "nuxt": "^3.15.3",
     "nuxt-auth-utils": "0.5.10",
+    "postgres": "^3.4.5",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
     "@unocss/nuxt": "^65.4.3",
     "@unocss/preset-uno": "^65.4.3",
     "@vueuse/core": "^12.5.0",

@@ -1,41 +1,43 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  sqliteTable,
-  text,
+  pgTable,
   integer,
-  blob,
+  varchar,
   primaryKey,
-} from "drizzle-orm/sqlite-core";
+  timestamp,
+  text,
+} from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 
-const CURRENT_TIMESTAMP = sql`(unixepoch())`;
-
 // Tables
-export const activities = sqliteTable("activities", {
+export const activities = pgTable("activities", {
   // the shares created
-  id: text().primaryKey().default(nanoid()),
-  timestamp: integer().default(CURRENT_TIMESTAMP).notNull(),
+  id: varchar()
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  timestamp: timestamp().notNull().defaultNow(),
+  creator: varchar().notNull(),
 });
 
 export const activityRelations = relations(activities, ({ many }) => ({
   revisions: many(revisions),
 }));
 
-export const files = sqliteTable("files", {
-  id: integer().primaryKey(),
-  name: text().notNull(),
-  hash: text().notNull().unique(), // Hash to avoid duplicates
-  data: blob().notNull(),
-  timestamp: integer().default(CURRENT_TIMESTAMP).notNull(),
+export const files = pgTable("files", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar().notNull(),
+  hash: varchar().notNull().unique(), // Hash to avoid duplicates
+  data: text().notNull(),
+  timestamp: timestamp().notNull().defaultNow(),
 });
 
-export const revisions = sqliteTable("revisions", {
-  id: integer().primaryKey(),
-  activityId: text()
+export const revisions = pgTable("revisions", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  activityId: varchar()
     .references(() => activities.id)
     .notNull(),
   number: integer().notNull(), // Revision number
-  timestamp: integer().default(CURRENT_TIMESTAMP).notNull(),
+  timestamp: timestamp().notNull().defaultNow(),
   metadataId: integer()
     .references(() => files.id)
     .notNull(),
@@ -53,7 +55,7 @@ export const revisionsRelations = relations(revisions, ({ many, one }) => ({
   }),
 }));
 
-export const revisionFiles = sqliteTable(
+export const revisionFiles = pgTable(
   "revisionFiles",
   {
     // Link files to a revision
