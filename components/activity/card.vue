@@ -8,8 +8,9 @@
 </script>
 
 <template>
-  <main
-    class="rounded-xl lt-md:w-75 w-85 rounded overflow-hidden shadow-lg text-gray-800 ring ring-indigo-50"
+  <NuxtLink
+    :to="`/${share.id}`"
+    class="block rounded-xl lt-md:w-75 w-85 overflow-hidden shadow-lg text-gray-200 cursor-pointer no-underline transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
   >
     <!-- Service logo and thumbnail -->
     <div>
@@ -65,13 +66,7 @@
             <h2 class="text-sm font-semibold">verycrunchy</h2>
           </div>
         </div>
-        <NuxtLink
-          class="h-8 w-20 bg-dark text-white rounded-md border-solid"
-          :to="`/${share.id}`"
-        >
-          <p class="text-center line-height-8 font-bold">OPEN</p>
-        </NuxtLink>
       </div>
     </div>
-  </main>
+  </NuxtLink>
 </template>
