@@ -1,69 +1,97 @@
 <template>
-  <div v-html="html"></div>
+  <div class="text-white">
+    <button
+      @click="isExpanded = !isExpanded"
+      class="w-full card flex text-inherit items-center gap-3 px-4 py-2 mb-2 text-left"
+    >
+      <div
+        :class="[
+          'i-heroicons-chevron-right size-4 text-inherit transition-transform',
+          isExpanded ? 'rotate-90' : '',
+        ]"
+      />
+      <div class="i-heroicons-document-text text-inherit size-5 opacity-70" />
+      <h1 class="font-semibold text-inherit">{{ name }}</h1>
+    </button>
+
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      leave-active-class="transition-all duration-200 ease-in"
+      enter-from-class="opacity-0 -translate-y-2"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div
+        v-show="isExpanded"
+        v-html="html"
+        class="rounded-xl overflow-hidden"
+      />
+    </Transition>
+  </div>
 </template>
 
-<script lang="ts" setup>
-  const { data } = defineProps({
+<script setup lang="ts">
+  const { data, name, expanded } = defineProps({
     data: { type: String, required: true },
+    name: { type: String, required: true },
+    expanded: { type: Boolean, default: false },
   });
-  // Import Prettier and use the built-in JSON parser
+
+  const isExpanded = ref(expanded);
+
   import prettier from "prettier";
   import babel from "prettier/plugins/babel";
   import estree from "prettier/plugins/estree";
-  import { highlighter } from "~/utils/highlighter";
 
-  // Format the JSON using Prettier
   const formattedJson = await prettier.format(data, {
-    parser: "json", // Use Prettier's built-in JSON parser
-    printWidth: 1000, // Optional:Wrap lines at 80 characters
-
-    tabWidth: 10, // Optional: Use 2 spaces for indentation
+    parser: "json",
+    printWidth: 1000,
+    tabWidth: 10,
     bracketSameLine: true,
-    useTabs: false, // Optional: Use spaces instead of tabs
     plugins: [babel, estree],
   });
 
-  // Convert the formatted JSON into highlighted HTML
   const html = highlighter.codeToHtml(formattedJson, {
     lang: "json",
-    theme: "github-dark-default",
+    theme: "premid-theme",
   });
 </script>
+
 <style>
-  .hoverable {
-    position: relative;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-
-  .hidden {
-    display: none;
-    position: absolute;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 5px;
-    padding: 5px;
-    white-space: pre-wrap;
-    max-width: 300px;
-    z-index: 10;
-  }
-
-  .hoverable:hover .hidden {
-    display: block;
-  }
-
-  pre:has(code) {
-    border-radius: .5rem;
-    border: solid 2px #333;
-  }
-  pre code {
-    display: block;
-    background: none;
-    white-space: pre;
-    -webkit-overflow-scrolling: touch;
-    overflow-x: scroll;
+  .code-block {
     max-width: 100%;
-    min-width: 100px;
-    padding: 20px;
+  }
+
+  .code-block :deep(pre) {
+    margin: 0 !important;
+    background: rgba(13, 17, 23, 0.7) !important;
+    border: 1px solid rgba(78, 62, 187, 0.2);
+  }
+
+  .code-block :deep(code) {
+    display: block;
+    padding: 1.25rem !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    tab-size: 2;
+  }
+
+  .code-block :deep(pre:hover) {
+    border-color: #4b7bf7;
+  }
+
+  .code-block :deep(::-webkit-scrollbar) {
+    height: 8px;
+    background: transparent;
+  }
+
+  .code-block :deep(::-webkit-scrollbar-thumb) {
+    background: rgba(75, 123, 247, 0.2);
+    border-radius: 4px;
+  }
+
+  .code-block :deep(::-webkit-scrollbar-thumb:hover) {
+    background: rgba(75, 123, 247, 0.4);
   }
 </style>
