@@ -19,10 +19,14 @@
     "nuxt-auth-utils": "0.5.10",
     "postgres": "^3.4.5",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@iconify/json": "^2.2.302",
+    "@types/ws": "^8.5.14",
     "@unocss/nuxt": "^65.4.3",
+    "@unocss/preset-icons": "^65.4.3",
     "@unocss/preset-uno": "^65.4.3",
     "@unocss/transformer-directives": "^65.4.3",
     "@vueuse/core": "^12.5.0",

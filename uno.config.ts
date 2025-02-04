@@ -1,9 +1,18 @@
 import presetUno from "@unocss/preset-uno";
+import UnocssIcons from "@unocss/preset-icons";
 import transformerDirectives from "@unocss/transformer-directives";
 import { defineConfig } from "unocss";
 
 export default defineConfig({
-  presets: [presetUno()],
+  presets: [
+    presetUno(),
+    UnocssIcons({
+      prefix: "i-",
+      extraProperties: {
+        display: "inline-block",
+      },
+    }),
+  ],
   transformers: [transformerDirectives()],
   theme: {
     fontFamily: {

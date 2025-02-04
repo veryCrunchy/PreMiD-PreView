@@ -38,10 +38,22 @@ importers:
       vue-router:
         specifier: latest
         version: 4.5.0(vue@3.5.13(typescript@5.7.3))
+      ws:
+        specifier: ^8.18.0
+        version: 8.18.0
     devDependencies:
+      '@iconify/json':
+        specifier: ^2.2.302
+        version: 2.2.302
+      '@types/ws':
+        specifier: ^8.5.14
+        version: 8.5.14
       '@unocss/nuxt':
         specifier: ^65.4.3
         version: 65.4.3(magicast@0.3.5)(postcss@8.5.1)(rollup@4.32.0)(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(vue@3.5.13(typescript@5.7.3))(webpack@5.97.1(esbuild@0.19.12))
+      '@unocss/preset-icons':
+        specifier: ^65.4.3
+        version: 65.4.3
       '@unocss/preset-uno':
         specifier: ^65.4.3
         version: 65.4.3
@@ -818,6 +830,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@iconify/json@2.2.302':
+    resolution: {integrity: sha512-gklpnOBA3xLNW68cdQz6iI4UnRGIXb+se8UyQN1lzy4Si01XIHynGq2nTep01HQK/I1Ltgz2h6srnPGSDB8LhQ==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -4910,6 +4925,11 @@ snapshots:
   '@esbuild/win32-x64@0.24.2':
     optional: true
 
+  '@iconify/json@2.2.302':
+    dependencies:
+      '@iconify/types': 2.0.0
+      pathe: 1.1.2
+
   '@iconify/types@2.0.0': {}
 
   '@iconify/utils@2.2.1':
@@ -5668,7 +5688,6 @@ snapshots:
   '@types/ws@8.5.14':
     dependencies:
       '@types/node': 22.10.10
-    optional: true
 
   '@ungap/structured-clone@1.3.0': {}
 
