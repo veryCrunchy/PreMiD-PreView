@@ -57,17 +57,33 @@
     },
     {
       title: "For Reviewers",
-      intro: "Streamline the review process",
+      intro: "Streamline the verification process",
       features: [
         {
-          title: "PR Testing Made Simple",
+          title: "Preview Before Merge",
           description:
-            "Import and test Activities directly from Pull Requests without local setup.",
+            "Test pending Pull Requests with the click of a button. Perfect for quick functionality checks during review.",
         },
         {
-          title: "Efficient Reviews",
+          title: "Community Testing",
           description:
-            "Quick access to both code and functionality. Review Activities faster than ever.",
+            "Let the community test scenarios you'd never think of, catching issues that would slip through normal code review.",
+        },
+      ],
+    },
+    {
+      title: "For Personal Projects",
+      intro: "Create Activities your way",
+      features: [
+        {
+          title: "Unofficial Activities",
+          description:
+            "Create and share Activities for smaller sites or personal projects that wouldn't fit in the official repository.",
+        },
+        {
+          title: "Your Version, Your Rules",
+          description:
+            "Create personalized versions of Activities with your own features and tweaks, perfect for customizing behavior to your needs.",
         },
       ],
     },
