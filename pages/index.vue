@@ -35,7 +35,7 @@
         {
           title: "Seamless Integration",
           description:
-            "Works perfectly alongside PMD CLI. Share your local development Activities with just one command.",
+            "Share directly from your local development environment with the PMD CLI. No extra setup needed.",
         },
       ],
     },
