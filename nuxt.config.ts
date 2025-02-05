@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   },
   vite: {
     server: {
-      allowedHosts: ["dev.crun.zip"],
+      allowedHosts: ["preview.crun.zip", "dev.crun.zip"],
     },
   },
 });
