@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen line-height-tight">
     <Blobs class="op-50 brightness-70" />
     <slot />
   </div>
