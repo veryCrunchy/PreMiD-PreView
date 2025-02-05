@@ -14,46 +14,56 @@
       <h1 class="font-semibold text-inherit">{{ name }}</h1>
     </button>
 
-    <Transition
-      enter-active-class="transition-all duration-200 ease-out"
-      leave-active-class="transition-all duration-200 ease-in"
-      enter-from-class="opacity-0 -translate-y-2"
-      leave-to-class="opacity-0 -translate-y-2"
-    >
-      <div
-        v-show="isExpanded"
-        v-html="html"
-        class="rounded-xl overflow-hidden"
-      />
-    </Transition>
+    <ClientOnly>
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        leave-active-class="transition-all duration-200 ease-in"
+        enter-from-class="opacity-0 -translate-y-2"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-show="isExpanded">
+          <div v-if="html" v-html="html" class="rounded-xl overflow-hidden" />
+          <div v-else class="card p-4 text-gray-400 animate-pulse">
+            Formatting code...
+          </div>
+        </div>
+      </Transition>
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
-  const { data, name, expanded } = defineProps({
-    data: { type: String, required: true },
-    name: { type: String, required: true },
-    expanded: { type: Boolean, default: false },
-  });
+const { data, name, expanded } = defineProps({
+  data: { type: String, required: true },
+  name: { type: String, required: true },
+  expanded: { type: Boolean, default: false },
+});
 
-  const isExpanded = ref(expanded);
+const isExpanded = ref(expanded);
+const html = ref<string>('');
 
-  import prettier from "prettier";
-  import babel from "prettier/plugins/babel";
-  import estree from "prettier/plugins/estree";
+// Move all processing to client-side
+onMounted(async () => {
+  const [prettier, { default: babel }, { default: estree }] = await Promise.all([
+    import('prettier'),
+    import('prettier/plugins/babel'),
+    import('prettier/plugins/estree')
+  ]);
 
   const formattedJson = await prettier.format(data, {
     parser: "json",
-    printWidth: 1000,
-    tabWidth: 10,
+    printWidth: 80,
+    tabWidth: 2,
     bracketSameLine: true,
     plugins: [babel, estree],
   });
 
-  const html = highlighter.codeToHtml(formattedJson, {
+  const highlighter = await getHighlighter();
+  html.value = highlighter.codeToHtml(formattedJson, {
     lang: "json",
     theme: "premid-theme",
   });
+});
 </script>
 
 <style>

@@ -306,9 +306,4 @@
     width: 100%;
     height: 1px;
   }
-
-  /* Additional styles for fixed header */
-  body {
-    @apply bg-[#0d1117];
-  }
 </style>

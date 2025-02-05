@@ -1,4 +1,4 @@
-import { createHighlighter } from "shiki";
+import { createHighlighter, type Highlighter } from "shiki";
 import { createCssVariablesTheme } from "shiki/core";
 
 const customTheme = createCssVariablesTheme({
@@ -16,7 +16,14 @@ const customTheme = createCssVariablesTheme({
   },
 });
 
-export const highlighter = await createHighlighter({
-  langs: ["json"],
-  themes: [customTheme, "github-dark-default"],
-});
+let _highlighter: Highlighter | null = null;
+
+export async function getHighlighter() {
+  if (!_highlighter) {
+    _highlighter = await createHighlighter({
+      langs: ["json"],
+      themes: [customTheme, "github-dark-default"],
+    });
+  }
+  return _highlighter;
+}
